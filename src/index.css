@@ -1,0 +1,439 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.perspective-1000 {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+/* Scene setup */
+.scene {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+/* Walls */
+.wall {
+  position: absolute;
+  background: #e5e5e5;
+  transform-style: preserve-3d;
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.2);
+}
+
+.wall-texture {
+  width: 100%;
+  height: 100%;
+  background: 
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
+    repeating-radial-gradient(
+      circle at 50% 50%,
+      rgba(0, 0, 0, 0.1) 0,
+      rgba(0, 0, 0, 0.1) 3px,
+      transparent 3px,
+      transparent 4px
+    ),
+    linear-gradient(
+      45deg,
+      rgba(0, 0, 0, 0.05) 25%,
+      transparent 25%,
+      transparent 75%,
+      rgba(0, 0, 0, 0.05) 75%
+    );
+  background-size: 100px 100px, 10px 10px, 100px 100px;
+  opacity: 0.95;
+  position: relative;
+}
+
+.wall-texture::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 35%,
+    transparent 65%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+}
+
+.back-wall {
+  width: 100vw;
+  height: 100vh;
+  transform: translateZ(-800px);
+  transition: transform 0.15s ease-out;
+  background: linear-gradient(
+    to bottom,
+    #e0e0e0,
+    #d0d0d0
+  );
+}
+
+.back-wall.impact {
+  transform: translateZ(-790px);
+  box-shadow: 
+    inset 0 0 100px rgba(0, 0, 0, 0.3),
+    0 0 50px rgba(0, 0, 0, 0.2);
+}
+
+.back-wall.impact .wall-texture {
+  animation: wallShake 0.15s ease-out;
+}
+
+@keyframes wallShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(2px); }
+  75% { transform: translateX(-2px); }
+}
+
+.left-wall {
+  width: 800px;
+  height: 100vh;
+  transform: rotateY(90deg) translateZ(-400px);
+  background: linear-gradient(
+    to right,
+    #d5d5d5,
+    #c5c5c5
+  );
+}
+
+.right-wall {
+  width: 800px;
+  height: 100vh;
+  transform: rotateY(-90deg) translateZ(-400px);
+  background: linear-gradient(
+    to left,
+    #d5d5d5,
+    #c5c5c5
+  );
+}
+
+.floor {
+  position: absolute;
+  width: 100vw;
+  height: 800px;
+  transform: rotateX(90deg) translateZ(400px);
+  background: linear-gradient(
+    45deg,
+    #c8c8c8,
+    #d8d8d8
+  );
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.2);
+}
+
+.floor-texture {
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(90deg, rgba(0,0,0,0.1) 0px, transparent 1px),
+    linear-gradient(rgba(0,0,0,0.1) 0px, transparent 1px),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255,255,255,0.1) 0px,
+      rgba(255,255,255,0.1) 2px,
+      transparent 2px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255,255,255,0.1) 0px,
+      rgba(255,255,255,0.1) 2px,
+      transparent 2px,
+      transparent 4px
+    );
+  background-size: 20px 20px, 20px 20px, 10px 10px, 10px 10px;
+  opacity: 0.8;
+}
+
+.ground-shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(0,0,0,0.2),
+    transparent 60%
+  );
+}
+
+.game-content {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.die-container {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  perspective: 1500px;
+  transform-style: preserve-3d;
+}
+
+.shadow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at center,
+    rgba(0,0,0,0.4),
+    transparent 70%
+  );
+  transform: rotateX(90deg) translateZ(0) scale(1);
+  filter: blur(8px);
+  opacity: 0;
+  animation: none;
+}
+
+.rolling-1 .shadow {
+  animation: shadow1 2s ease-out forwards;
+}
+
+.rolling-2 .shadow {
+  animation: shadow2 2s ease-out forwards;
+}
+
+.die {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+}
+
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: white;
+  border: 5px solid #e2e8f0;
+  border-radius: 24px;
+  display: grid;
+  grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+  gap: 8px;
+  padding: 16px;
+  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.1);
+}
+
+.dot {
+  @apply bg-gray-800;
+  border-radius: 50%;
+  margin: 8px;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.front  { transform: translateZ(100px); }
+.back   { transform: rotateY(180deg) translateZ(100px); }
+.right  { transform: rotateY(90deg) translateZ(100px); }
+.left   { transform: rotateY(-90deg) translateZ(100px); }
+.top    { transform: rotateX(90deg) translateZ(100px); }
+.bottom { transform: rotateX(-90deg) translateZ(100px); }
+
+/* One dot (front face) */
+.front .dot { grid-area: 2 / 2; }
+
+/* Two dots (right face) */
+.right .dot:nth-child(1) { grid-area: 1 / 1; }
+.right .dot:nth-child(2) { grid-area: 3 / 3; }
+
+/* Three dots (top face) */
+.top .dot:nth-child(1) { grid-area: 1 / 1; }
+.top .dot:nth-child(2) { grid-area: 2 / 2; }
+.top .dot:nth-child(3) { grid-area: 3 / 3; }
+
+/* Four dots (bottom face) */
+.bottom .dot:nth-child(1) { grid-area: 1 / 1; }
+.bottom .dot:nth-child(2) { grid-area: 1 / 3; }
+.bottom .dot:nth-child(3) { grid-area: 3 / 1; }
+.bottom .dot:nth-child(4) { grid-area: 3 / 3; }
+
+/* Five dots (left face) */
+.left .dot:nth-child(1) { grid-area: 1 / 1; }
+.left .dot:nth-child(2) { grid-area: 1 / 3; }
+.left .dot:nth-child(3) { grid-area: 2 / 2; }
+.left .dot:nth-child(4) { grid-area: 3 / 1; }
+.left .dot:nth-child(5) { grid-area: 3 / 3; }
+
+/* Six dots (back face) */
+.back .dot:nth-child(1) { grid-area: 1 / 1; }
+.back .dot:nth-child(2) { grid-area: 1 / 3; }
+.back .dot:nth-child(3) { grid-area: 2 / 1; }
+.back .dot:nth-child(4) { grid-area: 2 / 3; }
+.back .dot:nth-child(5) { grid-area: 3 / 1; }
+.back .dot:nth-child(6) { grid-area: 3 / 3; }
+
+/* Separate animations for each die */
+.rolling-1 {
+  animation: throw1 2s ease-out forwards;
+}
+
+.rolling-2 {
+  animation: throw2 2s ease-out forwards;
+}
+
+@keyframes tumble {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  20% {
+    transform: rotateX(360deg) rotateY(180deg) rotateZ(90deg);
+  }
+  40% {
+    transform: rotateX(720deg) rotateY(-90deg) rotateZ(180deg);
+  }
+  60% {
+    transform: rotateX(1080deg) rotateY(360deg) rotateZ(270deg);
+  }
+  80% {
+    transform: rotateX(1440deg) rotateY(-180deg) rotateZ(360deg);
+  }
+  100% {
+    transform: var(--final-rotation);
+  }
+}
+
+@keyframes throw1 {
+  0% {
+    transform: translateY(0) translateZ(0) translateX(0);
+  }
+  15% {
+    transform: translateY(-180px) translateZ(-150px) translateX(30px);
+  }
+  30% {
+    transform: translateY(-250px) translateZ(-300px) translateX(-45px);
+  }
+  45% {
+    transform: translateY(-200px) translateZ(-500px) translateX(60px);
+  }
+  60% {
+    transform: translateY(-150px) translateZ(-650px) translateX(-30px);
+  }
+  75% {
+    transform: translateY(-80px) translateZ(-725px) translateX(15px);
+  }
+  85% {
+    transform: translateY(-20px) translateZ(-775px) translateX(-5px);
+  }
+  92% {
+    transform: translateY(-10px) translateZ(-790px) translateX(0);
+  }
+  100% {
+    transform: translateY(0) translateZ(-800px) translateX(0);
+  }
+}
+
+@keyframes throw2 {
+  0% {
+    transform: translateY(0) translateZ(0) translateX(0);
+  }
+  15% {
+    transform: translateY(-220px) translateZ(-200px) translateX(-40px);
+  }
+  30% {
+    transform: translateY(-280px) translateZ(-350px) translateX(55px);
+  }
+  45% {
+    transform: translateY(-180px) translateZ(-550px) translateX(-70px);
+  }
+  60% {
+    transform: translateY(-120px) translateZ(-675px) translateX(40px);
+  }
+  75% {
+    transform: translateY(-60px) translateZ(-750px) translateX(-20px);
+  }
+  85% {
+    transform: translateY(-15px) translateZ(-775px) translateX(10px);
+  }
+  92% {
+    transform: translateY(-8px) translateZ(-790px) translateX(0);
+  }
+  100% {
+    transform: translateY(0) translateZ(-800px) translateX(0);
+  }
+}
+
+@keyframes shadow1 {
+  0% {
+    transform: rotateX(90deg) translateZ(0) scale(1);
+    opacity: 0.6;
+  }
+  15% {
+    transform: rotateX(90deg) translateZ(0) scale(0.7);
+    opacity: 0.3;
+  }
+  30% {
+    transform: rotateX(90deg) translateZ(0) scale(0.5);
+    opacity: 0.2;
+  }
+  45% {
+    transform: rotateX(90deg) translateZ(0) scale(0.3);
+    opacity: 0.1;
+  }
+  60% {
+    transform: rotateX(90deg) translateZ(0) scale(0.5);
+    opacity: 0.2;
+  }
+  75% {
+    transform: rotateX(90deg) translateZ(0) scale(0.7);
+    opacity: 0.3;
+  }
+  85% {
+    transform: rotateX(90deg) translateZ(0) scale(0.9);
+    opacity: 0.5;
+  }
+  92% {
+    transform: rotateX(90deg) translateZ(0) scale(0.95);
+    opacity: 0.55;
+  }
+  100% {
+    transform: rotateX(90deg) translateZ(0) scale(1);
+    opacity: 0.6;
+  }
+}
+
+@keyframes shadow2 {
+  0% {
+    transform: rotateX(90deg) translateZ(0) scale(1);
+    opacity: 0.6;
+  }
+  15% {
+    transform: rotateX(90deg) translateZ(0) scale(0.6);
+    opacity: 0.25;
+  }
+  30% {
+    transform: rotateX(90deg) translateZ(0) scale(0.4);
+    opacity: 0.15;
+  }
+  45% {
+    transform: rotateX(90deg) translateZ(0) scale(0.2);
+    opacity: 0.1;
+  }
+  60% {
+    transform: rotateX(90deg) translateZ(0) scale(0.4);
+    opacity: 0.2;
+  }
+  75% {
+    transform: rotateX(90deg) translateZ(0) scale(0.6);
+    opacity: 0.3;
+  }
+  85% {
+    transform: rotateX(90deg) translateZ(0) scale(0.8);
+    opacity: 0.45;
+  }
+  92% {
+    transform: rotateX(90deg) translateZ(0) scale(0.9);
+    opacity: 0.5;
+  }
+  100% {
+    transform: rotateX(90deg) translateZ(0) scale(1);
+    opacity: 0.6;
+  }
+}
