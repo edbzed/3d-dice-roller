@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)  [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue.svg)](https://www.typescriptlang.org/)  [![React](https://img.shields.io/badge/React-18.3-blue.svg)](https://reactjs.org/)  [![Vite](https://img.shields.io/badge/Vite-5.4-brightgreen.svg)](https://vitejs.dev/)  [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3.4-blueviolet.svg)](https://tailwindcss.com/)  [![ESLint](https://img.shields.io/badge/ESLint-9.9-purple.svg)](https://eslint.org/)
 
-Interactive 3D dice rolling application built with React, TypeScript, and CSS 3D transforms. Roll 3D virtual dice with animations and sound effects.
+Interactive 3D dice rolling application built with React, TypeScript, and CSS 3D transforms.   Roll 3D virtual dice with animations and sound effects.
 
 ## Features
 
